@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 
-export const GET = () => {
+export const GET = async (request: NextRequest) => {
   return new NextResponse("hello world")
 }
 
@@ -10,6 +10,6 @@ export const POST = async (request: NextRequest) => {
   
   return  NextResponse.json({
     data: body,
-    message: "Facility Avaliable"
+    message: "Facility Avalaible"
   });
 }
