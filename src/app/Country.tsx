@@ -33,6 +33,7 @@ export const Country = () => {
     width: 0,
     height: 0
   })
+  const [shippingOptions, setShippingOptions] = useState<any[]>([])
 
   const onChange = (e: any) => {
     setDimension({ ...dimension, [e.target.name]: [e.target.value] })
@@ -43,18 +44,18 @@ export const Country = () => {
         method: "GET"
       });
       const data = await response.json();
+      setShippingOptions(data);
     } catch (error) {
-
       console.error('Error:', error);
     }
   };
-  
+
   return (
     <main>
       Hello
       <div>
         <label>From Country</label>
-        <select value={fromCountry} onChange={(e) => { setFromCountry(e.target.value) }}>
+        <select className="p-3 mb-5 bg-slate-400" value={fromCountry} onChange={(e) => { setFromCountry(e.target.value) }}>
           <option value="">Select</option>
           {countries.map((country) => (
             <option>{country.name}</option>
@@ -63,7 +64,7 @@ export const Country = () => {
       </div>
       <div>
         <label>To Country</label>
-        <select value={toCountry} onChange={(e) => { setToCountry(e.target.value) }}>
+        <select className="p-3 mb-5 bg-slate-400" value={toCountry} onChange={(e) => { setToCountry(e.target.value) }}>
           <option value="">Select</option>
           {countries.map((country) => (
             <option key={country.code} value={country.code}>{country.name}</option>
@@ -72,7 +73,7 @@ export const Country = () => {
       </div>
       <div>
         <label>Weight (Kg):</label>
-        <input type="number" defaultValue='1' onChange={(e) => setWeight(e.target.value)} ></input >
+        <input className="p-3 mb-5 bg-slate-400" type="number" defaultValue='1' onChange={(e) => setWeight(e.target.value)} ></input >
 
 
       </div>
@@ -80,19 +81,21 @@ export const Country = () => {
         <h3>Parcel Dimensions (Optional)</h3>
         <div>
           Length
-          <input value={dimension.length} name="length" onChange={onChange}></input>
+          <input className="p-3 mb-5 bg-slate-400" value={dimension.length} name="length" onChange={onChange}></input>
         </div>
         <div>
           Width
-          <input value={dimension.width} name="width" onChange={onChange}></input>
+          <input className="p-3 mb-5 bg-slate-400" value={dimension.width} name="width" onChange={onChange}></input>
         </div>
         <div>
           Height
-          <input value={dimension.height} name="height" onChange={onChange}></input>
+          <input className="p-3 mb-5 bg-slate-400" value={dimension.height} name="height" onChange={onChange}></input>
         </div>
       </div>
-      <button onClick={() => onClickFind(fromCountry, toCountry, parseFloat(weight), dimension.length, dimension.width, dimension.height)}>Show Shipping Option</button>
-
+      <button className="p-3 mb-5 bg-blue-400 ml-2" onClick={() => onClickFind(fromCountry, toCountry, parseFloat(weight), dimension.length, dimension.width, dimension.height)}>Show Shipping Option</button>
+      <div>
+        Hello {shippingOptions}
+      </div>
 
     </main>
   )
