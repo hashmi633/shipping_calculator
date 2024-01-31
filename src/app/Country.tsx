@@ -37,13 +37,18 @@ export const Country = () => {
   const onChange = (e: any) => {
     setDimension({ ...dimension, [e.target.name]: [e.target.value] })
   }
+  const onClickFind = async (fromCountry: string, toCountry: string, weight: number, length: number, width: number, height: number) => {
+    try {
+      const response = await fetch(`/api/rate?fromCountry=${fromCountry}&toCountry=${toCountry}&weight=${weight}&length=${length}&width=${width}&height=${height}`, {
+        method: "GET"
+      });
+      const data = await response.json();
+    } catch (error) {
 
-  const onClickFind = async () => {
-    const response = await fetch('/api/rate', {
-      method: "GET"
-    })
-  }
-
+      console.error('Error:', error);
+    }
+  };
+  
   return (
     <main>
       Hello
@@ -86,7 +91,7 @@ export const Country = () => {
           <input value={dimension.height} name="height" onChange={onChange}></input>
         </div>
       </div>
-      <button onClick={onClickFind}>Show Shipping Option</button>
+      <button onClick={() => onClickFind(fromCountry, toCountry, parseFloat(weight), dimension.length, dimension.width, dimension.height)}>Show Shipping Option</button>
 
 
     </main>
