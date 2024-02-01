@@ -58,7 +58,7 @@ export const Country = () => {
         <select className="p-3 mb-5 bg-slate-400" value={fromCountry} onChange={(e) => { setFromCountry(e.target.value) }}>
           <option value="">Select</option>
           {countries.map((country) => (
-            <option>{country.name}</option>
+            <option key={country.code} value={country.code}>{country.name}</option>
           ))}
         </select>
       </div>
