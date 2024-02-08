@@ -8,7 +8,7 @@ export default function Home() {
         <h2>Price Calculator</h2>
       </div>
       <Country />
-      
+
     </main>
   );
 }
