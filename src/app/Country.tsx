@@ -73,18 +73,18 @@ export const Country = () => {
 
       </div>
       <div>
-        <h3>Parcel Dimensions (Optional)</h3>
+        <h3>Parcel Dimensions</h3>
         <div>
           Length
-          <input className="p-3 mb-5 bg-slate-400" value={dimension.length} name="length" onChange={onChange}></input>
+          <input className="p-3 mb-5 bg-slate-400" type="number" value={dimension.length} name="length" onChange={onChange}></input>
         </div>
         <div>
           Width
-          <input className="p-3 mb-5 bg-slate-400" value={dimension.width} name="width" onChange={onChange}></input>
+          <input className="p-3 mb-5 bg-slate-400" type="number" value={dimension.width} name="width" onChange={onChange}></input>
         </div>
         <div>
           Height
-          <input className="p-3 mb-5 bg-slate-400" value={dimension.height} name="height" onChange={onChange}></input>
+          <input className="p-3 mb-5 bg-slate-400" type="number" value={dimension.height} name="height" onChange={onChange}></input>
         </div>
       </div>
       <button className="p-3 mb-5 bg-blue-400 ml-2" onClick={() => onClickFind(fromCountry, toCountry, weight, dimension.length, dimension.width, dimension.height)}>Show Shipping Option</button>

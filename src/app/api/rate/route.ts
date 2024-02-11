@@ -3,6 +3,7 @@ import { db } from '../../../lib/dbClient'
 import { ParcelQueryTable, ParcelRate } from "@/lib/schema";
 import { sql } from "@vercel/postgres";
 import { and, eq, gt, gte, lt } from "drizzle-orm";
+import { boolean } from "drizzle-orm/mysql-core";
 
 
 export const GET = async (request: NextRequest) => {
@@ -14,6 +15,7 @@ export const GET = async (request: NextRequest) => {
   const width = parseFloat(request.nextUrl.searchParams.get("width") || "0");
   const height = parseFloat(request.nextUrl.searchParams.get("height") || "0");
   console.log(weight);
+
 
   let messages: string[] = [];
   let queryResults: string[] = [];
@@ -69,37 +71,26 @@ export const GET = async (request: NextRequest) => {
   }
   ];
 
-  if (!fromCountry || !toCountry || isNaN(weight) || weight <= 0) {
+  if (!fromCountry || !toCountry || isNaN(weight) || weight <= 0 || length <= 0 || width <= 0 || height <= 0) {
     queryResults.push("From Country, To Country, and Weight fields are mandatory to fill")
   } else {
 
     for (let carrier of carriers) {
 
+      let isPackageDimensionValid = (packageLength: number, packageWidth: number, packageHeight: number): boolean => {
+        const isTotalDimensionValid = (packageLength + packageWidth + packageHeight) <= 900;
+        let sideUpto600mm = 0;
+        if (packageLength <= 600) sideUpto600mm++;
+        if (packageWidth <= 600) sideUpto600mm++;
+        if (packageHeight <= 600) sideUpto600mm++;
 
-      // if ((length > carrier.maxLength && width > carrier.width && height > carrier.height) ||
-      //   ((length > carrier.maxLength && width > carrier.width)
-      //     || (width > carrier.width && height > carrier.height)
-      //     || (height > carrier.height && length > carrier.maxLength))
-      // ) {
-      //   queryResults.push(`Only one side of the parcel will be greater than 600`)
-      // }
+        return sideUpto600mm > 2 && isTotalDimensionValid;
+      }
 
-
-      if (fromCountry === carrier.fromCountry && weight <= carrier.maxWeight && (length || !carrier.maxLength <= carrier.maxLength)) {
-        // let query = sql`
-        //       SELECT rate_per_item
-        //       FROM "ParcelQuery"
-        //       WHERE from_country = ${fromCountry}
-        //       AND to_country = ${toCountry}
-        //       AND carrier = ${carrier.company}
-        //       AND length <= ${length}
-        //       AND width = ${width}
-        //       AND height = ${height}
-        //       AND weight_from <= ${weight}
-        //       AND weight_to > ${weight}`;
+      if (fromCountry === carrier.fromCountry && weight <= carrier.maxWeight &&
+        isPackageDimensionValid(length, width, height)) {
 
         try {
-          // const result = await db.query(query);
           const result = await db.select({
             fromCountry: ParcelQueryTable.fromCountry,
             toCountry: ParcelQueryTable.toCountry,
@@ -125,7 +116,7 @@ export const GET = async (request: NextRequest) => {
             result.forEach((row: Partial<ParcelRate>) => {
               const ratePerItem = row.ratePerItem ? row.ratePerItem : 0;
               const ratePerKg = row.ratePerKg ? row.ratePerKg : 0;
-              const calculatedRate = ratePerItem + (ratePerKg * (weight * 1000))
+              const calculatedRate = ratePerItem + (ratePerKg * weight)
               queryResults.push(`${carrier.company} offers a rate of EUR${calculatedRate} from ${fromCountry} to ${toCountry}`)
             });
           };
