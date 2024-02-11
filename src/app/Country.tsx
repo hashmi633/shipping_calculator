@@ -27,6 +27,7 @@ export const Country = () => {
     setDimension({ ...dimension, [e.target.name]: e.target.value })
   }
   const onClickFind = async (fromCountry: string, toCountry: string, weight: number, length: number, width: number, height: number) => {
+    console.log(weight);
     try {
       const response = await fetch(`/api/rate?fromCountry=${fromCountry}&toCountry=${toCountry}&weight=${weight}&length=${length}&width=${width}&height=${height}`, {
         method: "GET"
