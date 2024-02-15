@@ -51,7 +51,7 @@ export const Country = () => {
       <div>
         <label>From Country</label>
         <select className="p-3 mb-5 bg-slate-400" value={fromCountry} onChange={(e) => { setFromCountry(e.target.value) }}>
-          <option value="">Select</option>
+          <option value="">Select Here</option>
           {countries.map((country) => (
             <option key={country} value={country}>{country}</option>
           ))}
@@ -60,9 +60,9 @@ export const Country = () => {
       <div>
         <label>To Country</label>
         <select className="p-3 mb-5 bg-slate-400" value={toCountry} onChange={(e) => { setToCountry(e.target.value) }}>
-          <option value="">Select</option>
+          <option value="">Select Here</option>
           {countries.map((country) => (
-            <option key={country} value={country}>{country}</option>
+            <option >{country}</option>
           ))}
         </select>
       </div>
@@ -87,7 +87,9 @@ export const Country = () => {
           <input className="p-3 mb-5 bg-slate-400" type="number" value={dimension.height} name="height" onChange={onChange}></input>
         </div>
       </div>
-      <button className="p-3 mb-5 bg-blue-400 ml-2" onClick={() => onClickFind(fromCountry, toCountry, weight, dimension.length, dimension.width, dimension.height)}>Show Shipping Option</button>
+      <button className="p-3 mb-5 bg-blue-400 ml-2" onClick={() => onClickFind(fromCountry, toCountry, weight, dimension.length, dimension.width, dimension.height)}>
+        Show Shipping Option
+      </button>
       <div>
         {shippingOptions.map((option, index) => (
           <div key={index}>{`${index + 1}. ${option}`}</div>

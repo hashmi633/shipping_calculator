@@ -1,0 +1,70 @@
+/**
+ * v0 by Vercel.
+ * @see https://v0.dev/t/zTGkKiy0AaV
+ * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
+ */
+import { CardTitle, CardDescription, CardHeader, CardContent, Card } from "@/components/ui/card"
+import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
+import { SelectValue, SelectTrigger, SelectItem, SelectContent, Select } from "@/components/ui/select"
+import { Button } from "@/components/ui/button"
+
+export default function Component() {
+  return (
+    <div className="w-full max-w-md mx-auto">
+      <Card>
+        <CardHeader>
+          <CardTitle>Shipping Cost Estimator</CardTitle>
+          <CardDescription>Enter the package details to estimate the shipping cost.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="origin">Origin Address</Label>
+              <Input id="origin" placeholder="Enter origin address" required />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="destination">Destination Address</Label>
+              <Input id="destination" placeholder="Enter destination address" required />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="length">Length (in cm)</Label>
+                <Input id="length" placeholder="Enter length" required type="number" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="width">Width (in cm)</Label>
+                <Input id="width" placeholder="Enter width" required type="number" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="height">Height (in cm)</Label>
+                <Input id="height" placeholder="Enter height" required type="number" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="weight">Weight (in kg)</Label>
+                <Input id="weight" placeholder="Enter weight" required type="number" />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="method">Shipping Method</Label>
+              <Select id="method">
+                <SelectTrigger>
+                  <SelectValue placeholder="Select shipping method" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="standard">Standard</SelectItem>
+                  <SelectItem value="express">Express</SelectItem>
+                  <SelectItem value="overnight">Overnight</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Button className="w-full" type="submit">
+              Estimate Cost
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+

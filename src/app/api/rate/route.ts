@@ -8,14 +8,12 @@ import { boolean } from "drizzle-orm/mysql-core";
 
 export const GET = async (request: NextRequest) => {
 
-  const fromCountry = request.nextUrl.searchParams.get("fromCountry");
-  const toCountry = request.nextUrl.searchParams.get("toCountry");
+  const fromCountry = request.nextUrl.searchParams.get("originCountry");
+  const toCountry = request.nextUrl.searchParams.get("destinationCountry");
   const weight = parseFloat(request.nextUrl.searchParams.get("weight") || "0");
   const length = parseFloat(request.nextUrl.searchParams.get("length") || '0');
   const width = parseFloat(request.nextUrl.searchParams.get("width") || "0");
   const height = parseFloat(request.nextUrl.searchParams.get("height") || "0");
-  console.log(weight);
-
 
   let messages: string[] = [];
   let queryResults: string[] = [];
@@ -37,30 +35,30 @@ export const GET = async (request: NextRequest) => {
     width: 600,
     height: 600
   },
-  {
-    company: "DHL Express",
-    fromCountry: "Germany",
-    maxWeight: 30,
-    maxLength: 600,
-    width: 600,
-    height: 600
-  },
-  {
-    company: "DHL Parcel",
-    fromCountry: "Germany",
-    maxWeight: 30,
-    maxLength: 600,
-    width: 0,
-    height: 0
-  },
-  {
-    company: "Royal Mail",
-    fromCountry: "United Kingdom",
-    maxWeight: 2,
-    maxLength: 600,
-    width: 0,
-    height: 0
-  },
+  // {
+  //   company: "DHL Express",
+  //   fromCountry: "Germany",
+  //   maxWeight: 30,
+  //   maxLength: 600,
+  //   width: 600,
+  //   height: 600
+  // },
+  // {
+  //   company: "DHL Parcel",
+  //   fromCountry: "Germany",
+  //   maxWeight: 30,
+  //   maxLength: 600,
+  //   width: 0,
+  //   height: 0
+  // },
+  // {
+  //   company: "Royal Mail",
+  //   fromCountry: "United Kingdom",
+  //   maxWeight: 2,
+  //   maxLength: 600,
+  //   width: 0,
+  //   height: 0
+  // },
   {
     company: "Asendia",
     fromCountry: "France",
@@ -71,25 +69,32 @@ export const GET = async (request: NextRequest) => {
   }
   ];
 
-  if (!fromCountry || !toCountry || isNaN(weight) || weight <= 0 || length <= 0 || width <= 0 || height <= 0) {
-    queryResults.push("From Country, To Country, and Weight fields are mandatory to fill")
+  let isPackageDimensionValid = (packageLength: number, packageWidth: number, packageHeight: number): boolean => {
+    const isTotalDimensionValid = (packageLength + packageWidth + packageHeight) <= 90;
+    let sideUpto600mm = 0;
+    if (packageLength <= 60) sideUpto600mm++;
+    if (packageWidth <= 60) sideUpto600mm++;
+    if (packageHeight <= 60) sideUpto600mm++;
+
+    return sideUpto600mm > 2 && isTotalDimensionValid;
+  }
+
+  const validDimensions = isPackageDimensionValid(length, width, height)
+
+  if (!fromCountry || !toCountry || isNaN(weight) || weight <= 0 || length <= 0 || width <= 0 || height < 0) {
+    queryResults.push("Origin Country, Destination Country, and Weight fields are mandatory to fill")
   } else {
 
     for (let carrier of carriers) {
 
-      let isPackageDimensionValid = (packageLength: number, packageWidth: number, packageHeight: number): boolean => {
-        const isTotalDimensionValid = (packageLength + packageWidth + packageHeight) <= 900;
-        let sideUpto600mm = 0;
-        if (packageLength <= 600) sideUpto600mm++;
-        if (packageWidth <= 600) sideUpto600mm++;
-        if (packageHeight <= 600) sideUpto600mm++;
+      if (fromCountry === carrier.fromCountry && weight <= carrier.maxWeight) {
+        if (!validDimensions) {
 
-        return sideUpto600mm > 2 && isTotalDimensionValid;
-      }
+          const dimensionMessage = `Package dimensions are not valid for ${carrier.company}.`;
 
-      if (fromCountry === carrier.fromCountry && weight <= carrier.maxWeight &&
-        isPackageDimensionValid(length, width, height)) {
-
+          queryResults.push(dimensionMessage);
+          continue; // Skip to the next carrier
+        }
         try {
           const result = await db.select({
             fromCountry: ParcelQueryTable.fromCountry,
@@ -117,7 +122,7 @@ export const GET = async (request: NextRequest) => {
               const ratePerItem = row.ratePerItem ? row.ratePerItem : 0;
               const ratePerKg = row.ratePerKg ? row.ratePerKg : 0;
               const calculatedRate = ratePerItem + (ratePerKg * weight)
-              queryResults.push(`${carrier.company} offers a rate of EUR${calculatedRate} from ${fromCountry} to ${toCountry}`)
+              queryResults.push(`€${calculatedRate}`)
             });
           };
         } catch (error) {
