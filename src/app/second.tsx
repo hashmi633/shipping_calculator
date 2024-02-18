@@ -57,7 +57,13 @@ export default function Component() {
     width: "",
     height: ""
   })
-  const [shippingOptions, setShippingOptions] = useState<[]>([])
+
+  type ShippingOption = {
+    carrier: string;
+    rate: string;
+  };
+
+  const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([])
 
   const onChange = (e: any) => {
     if (parseFloat(e.target.value) >= 0 || e.target.value === '') {
@@ -192,7 +198,7 @@ export default function Component() {
             <Card key={index} >
               <CardHeader>
                 <CardTitle>
-                  Standard Shipping
+                  {option.carrier} - Standard Shipping
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -201,7 +207,7 @@ export default function Component() {
                     <TruckIcon className="w-4 h-4" />
 
                   </div>
-                  <div className="text-4xl font-bold">{option}</div>
+                  <div className="text-4xl font-bold">{option.rate}</div>
                   {/* <Button variant="outline">Select</Button> */}
                 </div>
               </CardContent>

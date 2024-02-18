@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-import Component from '@/app/Second'
+import Component from '@/app/second'
 
 
 

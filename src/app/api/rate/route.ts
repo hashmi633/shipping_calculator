@@ -15,8 +15,12 @@ export const GET = async (request: NextRequest) => {
   const width = parseFloat(request.nextUrl.searchParams.get("width") || "0") || 0;
   const height = parseFloat(request.nextUrl.searchParams.get("height") || "0") || 0;
 
+  interface QueryResult {
+    carrier: string | null | undefined;
+    rate: string;
+  }
   let messages: string[] = [];
-  let queryResults: string[] = [];
+  let queryResults: QueryResult[] = [];
 
   interface Carriers {
     company: string,
@@ -103,7 +107,7 @@ export const GET = async (request: NextRequest) => {
             const ratePerKg = row.ratePerKg ? row.ratePerKg : 0;
             const calculatedRate = (ratePerItem + (ratePerKg * weight)).toFixed(2);
             const carrier = row.carrier
-            queryResults.push(`€${calculatedRate}  ->  ${carrier}`)
+            queryResults.push({ carrier: carrier, rate: `€${calculatedRate}` })
           });
           // console.log("Hello0")
         };
