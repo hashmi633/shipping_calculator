@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-import { Country } from '@/app/Country'
+import Component from '@/app/second'
 
 
 
@@ -8,9 +8,10 @@ export default function Home() {
   return (
     <main>
       <div>
-        <h2>Price Calculator</h2>
+        {/* <h2>Price Calculator</h2> */}
       </div>
-      <Country />
+      <Component />
+      {/* <Country /> */}
 
     </main>
   );

@@ -11,39 +11,70 @@ import { Input } from "@/components/ui/input"
 import { DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem, DropdownMenuContent, DropdownMenu } from "@/components/ui/dropdown-menu"
 import { SelectValue, SelectTrigger, SelectItem, SelectContent, Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 
 export default function Component() {
 
   type dimension = {
-    length: number,
-    width: number,
-    height: number
+    length: string,
+    width: string,
+    height: string
   }
 
-  const countries: string[] = ['United States', 'Canada', 'United Kingdom', 'Australia', 'Germany', 'Netherlands', 'France'];
+  // const countries: string[] = ['United States', 'Canada', 'United Kingdom', 'Australia', 'Germany', 'Netherlands', 'France', 'Pakistan'];
 
-  const [destinationCountry, setDestinationCountry] = useState<string>('');
+  const [destinationCountry, setDestinationCountry] = useState<string[]>([]);
+  const [destCountry, setDestCountry] = useState<string>('');
+
+  useEffect(() => {
+    const fetchDestinationCountries = async () => {
+      try {
+        const response = await fetch('api/destination', {
+          method: "GET"
+        });
+        if (!response.ok) {
+          throw new Error(`Server responded with status ${response.status}`);
+        }
+        const data = await response.json()
+        setDestinationCountry(data.results)
+      } catch (error) {
+        console.error('Error fetching countries:', error);
+      }
+    };
+    fetchDestinationCountries();
+  }, []
+  );
+
+
+
+
   const [originCountry, setOriginCountry] = useState<string>('Netherlands');
-  const [weight, setWeight] = useState<number>(0);
+  const [weight, setWeight] = useState<string>("");
   const [dimension, setDimension] = useState<dimension>({
-    length: 0,
-    width: 0,
-    height: 0
+    length: "",
+    width: "",
+    height: ""
   })
   const [shippingOptions, setShippingOptions] = useState<[]>([])
 
   const onChange = (e: any) => {
-    setDimension({ ...dimension, [e.target.name]: e.target.value })
+    if (parseFloat(e.target.value) >= 0 || e.target.value === '') {
+      setDimension({ ...dimension, [e.target.name]: e.target.value })
+    }
   }
 
   const [resultsFetched, setResultsFetched] = useState(false);
 
-  const onClickFind = async (originCountry: string, destinationCountry: string, weight: number, length: number, width: number, height: number) => {
+  const onClickFind = async (originCountry: string, destCountry: string, weight: number, length: number, width: number, height: number) => {
     console.log(weight);
+    console.log(length);
+    // if (!weight) {
+    //   alert("Weight field cannot be empty");
+    //   return;
+    // }
     try {
-      const response = await fetch(`/api/rate?originCountry=${originCountry}&destinationCountry=${destinationCountry}&weight=${weight}&length=${length}&width=${width}&height=${height}`, {
+      const response = await fetch(`/api/rate?originCountry=${originCountry}&destCountry=${destCountry}&weight=${weight}&length=${length}&width=${width}&height=${height}`, {
         method: "GET"
       });
 
@@ -61,9 +92,9 @@ export default function Component() {
   };
 
   return (
-    <main className="flex flex-col md:flex-row items-stretch">
-      <div className="md:flex-1 p-4">
-        <Card>
+    <main className="flex flex-col md:flex-row items-stretch gap-4 md:gap-8 p-4">
+      <div className="flex-1">
+        <Card className="h-full border-2 border-gray-300">
           <CardHeader>
             <CardTitle>Shipping Cost Estimator</CardTitle>
             <CardDescription>Enter the package details to estimate the shipping cost.</CardDescription>
@@ -87,14 +118,16 @@ export default function Component() {
 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <select className="ml-2 border border-gray-200 w-32 h-8 dark:border-gray-800">
-                      <option value="">  {destinationCountry || "Select"}</option>
+                    <select className="ml-2 border border-gray-200 w-36 h-8 dark:border-gray-800">
+                      <option value="" >  {destCountry || "Select"}</option>
                     </select>
                   </DropdownMenuTrigger>
 
-                  <DropdownMenuContent>
-                    {countries.map((country) => (
-                      <DropdownMenuItem key={country} onSelect={() => setDestinationCountry(country)}>
+                  <DropdownMenuContent >
+
+                    {destinationCountry.map((country) => (
+                      <DropdownMenuItem
+                        key={country} onSelect={() => setDestCountry(country)}>
                         {country}
                       </DropdownMenuItem>
                     ))}
@@ -118,7 +151,14 @@ export default function Component() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="weight">Weight (in kg)</Label>
-                  <Input id="weight" placeholder="Enter weight" required type="number" value={weight} onChange={(e) => setWeight(parseFloat(e.target.value))} />
+                  <Input id="weight" placeholder="Enter weight" required type="number" value={weight}
+                    onChange={(e) => {
+                      if (parseFloat(e.target.value) >= 0
+                        || e.target.value === ''
+                      )
+                        setWeight(e.target.value)
+                    }}
+                  />
                 </div>
               </div>
               {/* <div className="space-y-2">
@@ -134,8 +174,8 @@ export default function Component() {
                 </SelectContent>
               </Select>
             </div> */}
-              <Button className="w-full" type="button" onClick={() => onClickFind(originCountry, destinationCountry, weight, dimension.length, dimension.width, dimension.height)}>
-                Estimate Cost
+              <Button className="w-full" type="button" onClick={() => onClickFind(originCountry, destCountry, parseFloat(weight), parseFloat(dimension.length), parseFloat(dimension.width), parseFloat(dimension.height))}>
+                Show shipping options
               </Button>
             </form>
           </CardContent>
@@ -143,15 +183,17 @@ export default function Component() {
 
       </div>
       {resultsFetched && (
-        <div className="md:flex-1 mt-4 md:mt-0 md:ml-4">
+        <div className="flex-1">
 
           <CardHeader>
             <CardTitle>Shipping Results</CardTitle>
           </CardHeader>
           {shippingOptions.map((option, index) => (
-            <Card key={index} className="mt-4 md:mt-0">
+            <Card key={index} >
               <CardHeader>
-                <CardTitle>{`Option ${index + 1}`}</CardTitle>
+                <CardTitle>
+                  Standard Shipping
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid gap-4">
@@ -160,7 +202,7 @@ export default function Component() {
 
                   </div>
                   <div className="text-4xl font-bold">{option}</div>
-                  <Button variant="outline">Select</Button>
+                  {/* <Button variant="outline">Select</Button> */}
                 </div>
               </CardContent>
             </Card>

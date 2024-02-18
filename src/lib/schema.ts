@@ -12,6 +12,8 @@ export const ParcelQueryTable = pgTable("ParcelQuery", {
   maxOneDim: integer("max_one_dim"),
   ratePerItem: integer("rate_per_item").notNull(),
   ratePerKg: integer("rate_per_kg").notNull(),
+  shippingMethod: varchar("shipping_method"),
+  estimatedDelivery: varchar("estimated_delivery")
 });
 
 export type ParcelRate = typeof ParcelQueryTable.$inferSelect; // return type when queried
