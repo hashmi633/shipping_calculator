@@ -68,12 +68,11 @@ export default function Component() {
   const [resultsFetched, setResultsFetched] = useState(false);
 
   const onClickFind = async (originCountry: string, destCountry: string, weight: number, length: number, width: number, height: number) => {
-    console.log(weight);
-    console.log(length);
-    // if (!weight) {
-    //   alert("Weight field cannot be empty");
-    //   return;
-    // }
+
+    if (!weight) {
+      alert("Weight field cannot be empty");
+      return;
+    }
     try {
       const response = await fetch(`/api/rate?originCountry=${originCountry}&destCountry=${destCountry}&weight=${weight}&length=${length}&width=${width}&height=${height}`, {
         method: "GET"
