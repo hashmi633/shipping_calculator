@@ -101,8 +101,9 @@ export const GET = async (request: NextRequest) => {
           result.forEach((row: Partial<ParcelRate>) => {
             const ratePerItem = row.ratePerItem ? row.ratePerItem : 0;
             const ratePerKg = row.ratePerKg ? row.ratePerKg : 0;
-            const calculatedRate = parseFloat((ratePerItem + (ratePerKg * weight)).toFixed(2));
-            queryResults.push(`€${calculatedRate}`)
+            const calculatedRate = (ratePerItem + (ratePerKg * weight)).toFixed(2);
+            const carrier = row.carrier
+            queryResults.push(`€${calculatedRate}  ->  ${carrier}`)
           });
           // console.log("Hello0")
         };

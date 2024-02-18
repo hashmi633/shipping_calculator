@@ -37,7 +37,8 @@ export default function Component() {
           throw new Error(`Server responded with status ${response.status}`);
         }
         const data = await response.json()
-        setDestinationCountry(data.results)
+        const sortedCountries = data.results.sort((a: string, b: string) => a.localeCompare(b));
+        setDestinationCountry(sortedCountries)
       } catch (error) {
         console.error('Error fetching countries:', error);
       }

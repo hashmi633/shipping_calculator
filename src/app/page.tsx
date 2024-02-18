@@ -1,18 +1,13 @@
 import Image from "next/image";
 
-import Component from '@/app/second'
+import Component from '@/app/Second'
 
 
 
 export default function Home() {
   return (
     <main>
-      <div>
-        {/* <h2>Price Calculator</h2> */}
-      </div>
       <Component />
-      {/* <Country /> */}
-
     </main>
   );
 }
