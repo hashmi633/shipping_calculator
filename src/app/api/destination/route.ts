@@ -10,7 +10,7 @@ export const GET = async (request: NextRequest) => {
   let queryResults: string[] = [];
 
   try {
-    const data = await db.select({
+    const data = await db.selectDistinct({
       toCountry: ParcelQueryTable.toCountry,
     }).from(ParcelQueryTable)
 
