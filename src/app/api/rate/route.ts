@@ -39,38 +39,38 @@ export const GET = async (request: NextRequest) => {
     width: 600,
     height: 600
   },
-    // {
-    //   company: "DHL Express",
-    //   fromCountry: "Germany",
-    //   maxWeight: 30,
-    //   maxLength: 600,
-    //   width: 600,
-    //   height: 600
-    // },
-    // {
-    //   company: "DHL Parcel",
-    //   fromCountry: "Germany",
-    //   maxWeight: 30,
-    //   maxLength: 600,
-    //   width: 0,
-    //   height: 0
-    // },
-    // {
-    //   company: "Royal Mail",
-    //   fromCountry: "United Kingdom",
-    //   maxWeight: 2,
-    //   maxLength: 600,
-    //   width: 0,
-    //   height: 0
-    // },
-    // {
-    //   company: "Asendia",
-    //   fromCountry: "France",
-    //   maxWeight: 2,
-    //   maxLength: 600,
-    //   width: 600,
-    //   height: 600
-    // }
+  // {
+  //   company: "DHL Express",
+  //   fromCountry: "Germany",
+  //   maxWeight: 30,
+  //   maxLength: 600,
+  //   width: 600,
+  //   height: 600
+  // },
+  // {
+  //   company: "DHL Parcel",
+  //   fromCountry: "Germany",
+  //   maxWeight: 30,
+  //   maxLength: 600,
+  //   width: 0,
+  //   height: 0
+  // },
+  // {
+  //   company: "Royal Mail",
+  //   fromCountry: "United Kingdom",
+  //   maxWeight: 2,
+  //   maxLength: 600,
+  //   width: 0,
+  //   height: 0
+  // },
+  {
+    company: "Asendia",
+    fromCountry: "Netherlands",
+    maxWeight: 2,
+    maxLength: 600,
+    width: 600,
+    height: 600
+  }
   ];
 
 
@@ -105,9 +105,11 @@ export const GET = async (request: NextRequest) => {
           result.forEach((row: Partial<ParcelRate>) => {
             const ratePerItem = row.ratePerItem ? row.ratePerItem : 0;
             const ratePerKg = row.ratePerKg ? row.ratePerKg : 0;
-            const calculatedRate = (ratePerItem + (ratePerKg * weight)).toFixed(2);
+            const calculatedRate = (ratePerItem + (ratePerKg * weight))
+              .toFixed(2);
             const carrier = row.carrier
             queryResults.push({ carrier: carrier, rate: `€${calculatedRate}` })
+            console.log(carrier, calculatedRate);
           });
           // console.log("Hello0")
         };

@@ -15,6 +15,13 @@
       "when": 1707626868213,
       "tag": "0001_nosy_black_crow",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1708456911918,
+      "tag": "0002_gigantic_shard",
+      "breakpoints": true
     }
   ]
 }

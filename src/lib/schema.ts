@@ -10,8 +10,8 @@ export const ParcelQueryTable = pgTable("ParcelQuery", {
   weightTo: real("weight_to"),
   maxSumDim: integer("max_sum_dim"),
   maxOneDim: integer("max_one_dim"),
-  ratePerItem: integer("rate_per_item").notNull(),
-  ratePerKg: integer("rate_per_kg").notNull(),
+  ratePerItem: real("rate_per_item").notNull(),
+  ratePerKg: real("rate_per_kg").notNull(),
   shippingMethod: varchar("shipping_method"),
   estimatedDelivery: varchar("estimated_delivery")
 });
