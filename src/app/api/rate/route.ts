@@ -55,14 +55,14 @@ export const GET = async (request: NextRequest) => {
   //   width: 0,
   //   height: 0
   // },
-  // {
-  //   company: "Royal Mail",
-  //   fromCountry: "United Kingdom",
-  //   maxWeight: 2,
-  //   maxLength: 600,
-  //   width: 0,
-  //   height: 0
-  // },
+  {
+    company: "Royal Mail",
+    fromCountry: "Netherlands",
+    maxWeight: 2,
+    maxLength: 600,
+    width: 0,
+    height: 0
+  },
   {
     company: "Asendia",
     fromCountry: "Netherlands",
