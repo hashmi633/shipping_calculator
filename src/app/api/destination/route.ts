@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { db } from '../../../lib/dbClient'
-import { ParcelQueryTable, ParcelRate } from "@/lib/schema";
+import { shippingRates, ParcelRate } from "@/lib/schema";
 import { sql } from "@vercel/postgres";
 import { and, eq, exists, gt, gte, lt, or } from "drizzle-orm";
 import { boolean } from "drizzle-orm/mysql-core";
@@ -11,8 +11,8 @@ export const GET = async (request: NextRequest) => {
 
   try {
     const data = await db.selectDistinct({
-      toCountry: ParcelQueryTable.toCountry,
-    }).from(ParcelQueryTable)
+      toCountry: shippingRates.toCountry,
+    }).from(shippingRates)
 
 
     // console.log("Bicho Gang-009");

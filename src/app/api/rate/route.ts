@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { db } from '../../../lib/dbClient'
-import { ParcelQueryTable, ParcelRate } from "@/lib/schema";
+import { shippingRates, boxes, ParcelRate } from "@/lib/schema";
 import { sql } from "@vercel/postgres";
 import { and, eq, gt, gte, lt, or } from "drizzle-orm";
 import { boolean } from "drizzle-orm/mysql-core";
@@ -39,22 +39,22 @@ export const GET = async (request: NextRequest) => {
     width: 600,
     height: 600
   },
-  // {
-  //   company: "DHL Express",
-  //   fromCountry: "Germany",
-  //   maxWeight: 30,
-  //   maxLength: 600,
-  //   width: 600,
-  //   height: 600
-  // },
-  // {
-  //   company: "DHL Parcel",
-  //   fromCountry: "Germany",
-  //   maxWeight: 30,
-  //   maxLength: 600,
-  //   width: 0,
-  //   height: 0
-  // },
+  {
+    company: "DHL Express",
+    fromCountry: "Netherlands",
+    maxWeight: 2,
+    maxLength: 600,
+    width: 600,
+    height: 600
+  },
+  {
+    company: "DHL Parcel",
+    fromCountry: "Germany",
+    maxWeight: 30,
+    maxLength: 600,
+    width: 0,
+    height: 0
+  },
   {
     company: "Royal Mail",
     fromCountry: "Netherlands",
@@ -81,27 +81,32 @@ export const GET = async (request: NextRequest) => {
       // console.log("Hello -1")
       try {
         const result = await db.select({
-          fromCountry: ParcelQueryTable.fromCountry,
-          toCountry: ParcelQueryTable.toCountry,
-          carrier: ParcelQueryTable.carrier,
-          ratePerItem: ParcelQueryTable.ratePerItem,
-          ratePerKg: ParcelQueryTable.ratePerKg
-        }).from(ParcelQueryTable)
+          fromCountry: shippingRates.fromCountry,
+          toCountry: shippingRates.toCountry,
+          carrier: shippingRates.carrier,
+          ratePerItem: shippingRates.ratePerItem,
+          ratePerKg: shippingRates.ratePerKg
+        }).from(shippingRates)
           .where(
             and(
-              eq(ParcelQueryTable.fromCountry, fromCountry),
-              eq(ParcelQueryTable.toCountry, toCountry),
-              eq(ParcelQueryTable.carrier, carrier.company),
-              lt(ParcelQueryTable.weightFrom, weight),
-              gte(ParcelQueryTable.weightTo, weight),
-              gte(ParcelQueryTable.maxSumDim, length + width + height),
-              gte(ParcelQueryTable.maxOneDim, length),
-              gte(ParcelQueryTable.maxOneDim, width),
-              gte(ParcelQueryTable.maxOneDim, height),
+              eq(shippingRates.fromCountry, fromCountry),
+              eq(shippingRates.toCountry, toCountry),
+              eq(shippingRates.carrier, carrier.company),
+              lt(shippingRates.weightFrom, weight),
+              gte(shippingRates.weightTo, weight),
+            )
+          ).leftJoin(boxes,
+            (
+              gte(boxes.maxSumDim, length + width + height),
+              gte(boxes.maxOneDim, length),
+              gte(boxes.maxOneDim, width),
+              gte(boxes.maxOneDim, height),
+              eq(shippingRates.id, boxes.id)
             )
           );
-
+        // console.log(result.length)
         if (result.length > 0) {
+          // console.log("Hello")
           result.forEach((row: Partial<ParcelRate>) => {
             const ratePerItem = row.ratePerItem ? row.ratePerItem : 0;
             const ratePerKg = row.ratePerKg ? row.ratePerKg : 0;
@@ -109,9 +114,9 @@ export const GET = async (request: NextRequest) => {
               .toFixed(2);
             const carrier = row.carrier
             queryResults.push({ carrier: carrier, rate: `€${calculatedRate}` })
-            console.log(carrier, calculatedRate);
+            // console.log(carrier, calculatedRate);
           });
-          // console.log("Hello0")
+
         };
 
       } catch (error) {
