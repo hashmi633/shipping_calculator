@@ -49,8 +49,8 @@ export const GET = async (request: NextRequest) => {
   },
   {
     company: "DHL Parcel",
-    fromCountry: "Germany",
-    maxWeight: 30,
+    fromCountry: "Netherlands",
+    maxWeight: 32,
     maxLength: 600,
     width: 0,
     height: 0
