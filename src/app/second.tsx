@@ -110,7 +110,7 @@ export default function Component() {
 
   return (
     <main className="flex flex-col md:flex-row items-stretch gap-4 md:gap-8 p-4">
-      <div className="flex-1">
+      <div className="flex-1 md:flex-none md:w-1/3">
         <Card className="h-full border-2 border-gray-300">
           <CardHeader>
             <CardTitle>Shipping Cost Estimator</CardTitle>
@@ -135,7 +135,7 @@ export default function Component() {
 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <select className="ml-2 border border-gray-200 w-36 h-8 dark:border-gray-800">
+                    <select className="ml-2 border border-gray-200 w-44 h-8 dark:border-gray-800">
                       <option value="" >  {destCountry || "Select"}</option>
                     </select>
                   </DropdownMenuTrigger>
@@ -199,54 +199,56 @@ export default function Component() {
         </Card>
 
       </div>
-      <div>
-        {
-          isLoading ? (
-            <div>Loading...</div> // Placeholder for your loading spinner
-          ) :
+      <div className="flex-1">
+        <Card className="h-full border-2 border-gray-300">
+          {
+            isLoading ? (
+              <div>Loading...</div> // Placeholder for your loading spinner
+            ) :
 
 
-            resultsFetched &&
-            (
-              <div className="flex-1">
+              resultsFetched &&
+              (
+                <div className="flex-1">
 
-                <CardHeader>
-                  <CardTitle>Shipping Results</CardTitle>
-                </CardHeader>
-                <div>
-                  {
-                    shippingOptions.map((option, index) => (
-                      <Card key={index} >
-                        <CardHeader>
-                          <CardTitle>
-                            {option.carrier} - Standard Shipping
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="grid gap-4">
-                            <div className="flex items-center gap-2">
-                              {/* <TruckIcon className="w-4 h-4" /> */}
+                  <CardHeader>
+                    <CardTitle>Shipping Results</CardTitle>
+                  </CardHeader>
+                  <div>
+                    {
+                      shippingOptions.map((option, index) => (
+                        <Card key={index} className="border-1">
+                          <CardHeader>
+                            <CardTitle>
+                              {option.carrier} - Standard Shipping
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="grid gap-4">
+                              <div className="flex items-center gap-2 ">
+                                {/* <TruckIcon className="w-4 h-4" /> */}
 
+                              </div>
+                              <div className="text-4xl font-bold">{option.rate}</div>
+                              {/* <Button variant="outline">Select</Button> */}
                             </div>
-                            <div className="text-4xl font-bold">{option.rate}</div>
-                            {/* <Button variant="outline">Select</Button> */}
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))
-                  }
+                          </CardContent>
+                        </Card>
+                      ))
+                    }
+                  </div>
                 </div>
-              </div>
-            )
-        }
+              )
+          }
 
-        {
-          noResult &&
-          <CardHeader>
-            <CardTitle>No Result Found</CardTitle>
-          </CardHeader>
+          {
+            noResult &&
+            <CardHeader>
+              <CardTitle>No Result Found</CardTitle>
+            </CardHeader>
 
-        }
+          }
+        </Card>
       </div>
     </main>
   )
