@@ -22,10 +22,25 @@ export default function Component() {
     height: string
   }
 
-  // const countries: string[] = ['United States', 'Canada', 'United Kingdom', 'Australia', 'Germany', 'Netherlands', 'France', 'Pakistan'];
-
   const [destinationCountry, setDestinationCountry] = useState<string[]>([]);
   const [destCountry, setDestCountry] = useState<string>('');
+  const [noResult, setNoResult] = useState(false);
+  const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([])
+  const [originCountry, setOriginCountry] = useState<string>('Netherlands');
+  const [weight, setWeight] = useState<string>("");
+  const [resultsFetched, setResultsFetched] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [dimension, setDimension] = useState<dimension>({
+    length: "",
+    width: "",
+    height: ""
+  })
+  type ShippingOption = {
+    carrier: string;
+    rate: string;
+  };
+
+  let message: string = "";
 
   useEffect(() => {
     const fetchDestinationCountries = async () => {
@@ -47,31 +62,11 @@ export default function Component() {
   }, []
   );
 
-
-
-
-  const [originCountry, setOriginCountry] = useState<string>('Netherlands');
-  const [weight, setWeight] = useState<string>("");
-  const [dimension, setDimension] = useState<dimension>({
-    length: "",
-    width: "",
-    height: ""
-  })
-
-  type ShippingOption = {
-    carrier: string;
-    rate: string;
-  };
-
-  const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([])
-
   const onChange = (e: any) => {
     if (parseFloat(e.target.value) >= 0 || e.target.value === '') {
       setDimension({ ...dimension, [e.target.name]: e.target.value })
     }
   }
-
-  const [resultsFetched, setResultsFetched] = useState(false);
 
   const onClickFind = async (originCountry: string, destCountry: string, weight: number, length: number, width: number, height: number) => {
 
@@ -79,6 +74,9 @@ export default function Component() {
       alert("Weight field cannot be empty");
       return;
     }
+    setNoResult(false);
+    setIsLoading(true);
+
     try {
       const response = await fetch(`/api/rate?originCountry=${originCountry}&destCountry=${destCountry}&weight=${weight}&length=${length}&width=${width}&height=${height}`, {
         method: "GET"
@@ -92,8 +90,21 @@ export default function Component() {
       setShippingOptions(data.results); // Assuming you want to store the results in state
       setResultsFetched(true);
 
+      if (
+        data.results.length === 0
+        &&
+        data.messages === "No Result Found"
+      ) {
+        setNoResult(true);
+      } else {
+        setNoResult(false);
+      }
+
     } catch (error) {
       return console.error('Error:', error);
+    }
+    finally {
+      setIsLoading(false);
     }
   };
 
@@ -188,33 +199,55 @@ export default function Component() {
         </Card>
 
       </div>
-      {resultsFetched && (
-        <div className="flex-1">
+      <div>
+        {
+          isLoading ? (
+            <div>Loading...</div> // Placeholder for your loading spinner
+          ) :
 
-          <CardHeader>
-            <CardTitle>Shipping Results</CardTitle>
-          </CardHeader>
-          {shippingOptions.map((option, index) => (
-            <Card key={index} >
-              <CardHeader>
-                <CardTitle>
-                  {option.carrier} - Standard Shipping
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-4">
-                  <div className="flex items-center gap-2">
-                    {/* <TruckIcon className="w-4 h-4" /> */}
 
-                  </div>
-                  <div className="text-4xl font-bold">{option.rate}</div>
-                  {/* <Button variant="outline">Select</Button> */}
+            resultsFetched &&
+            (
+              <div className="flex-1">
+
+                <CardHeader>
+                  <CardTitle>Shipping Results</CardTitle>
+                </CardHeader>
+                <div>
+                  {
+                    shippingOptions.map((option, index) => (
+                      <Card key={index} >
+                        <CardHeader>
+                          <CardTitle>
+                            {option.carrier} - Standard Shipping
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="grid gap-4">
+                            <div className="flex items-center gap-2">
+                              {/* <TruckIcon className="w-4 h-4" /> */}
+
+                            </div>
+                            <div className="text-4xl font-bold">{option.rate}</div>
+                            {/* <Button variant="outline">Select</Button> */}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))
+                  }
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+              </div>
+            )
+        }
+
+        {
+          noResult &&
+          <CardHeader>
+            <CardTitle>No Result Found</CardTitle>
+          </CardHeader>
+
+        }
+      </div>
     </main>
   )
 }

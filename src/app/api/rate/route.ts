@@ -19,7 +19,8 @@ export const GET = async (request: NextRequest) => {
     carrier: string | null | undefined;
     rate: string;
   }
-  let messages: string[] = [];
+  let messages: string = '';
+  let condition: boolean = false;
   let queryResults: QueryResult[] = [];
 
   interface Carriers {
@@ -77,56 +78,65 @@ export const GET = async (request: NextRequest) => {
 
   for (let carrier of carriers) {
 
-    if (fromCountry === carrier.fromCountry && weight <= carrier.maxWeight) {
-      // console.log("Hello -1")
-      try {
-        const result = await db.select({
-          fromCountry: shippingRates.fromCountry,
-          toCountry: shippingRates.toCountry,
-          carrier: shippingRates.carrier,
-          ratePerItem: shippingRates.ratePerItem,
-          ratePerKg: shippingRates.ratePerKg
-        }).from(shippingRates)
-          .where(
-            and(
-              eq(shippingRates.fromCountry, fromCountry),
-              eq(shippingRates.toCountry, toCountry),
-              eq(shippingRates.carrier, carrier.company),
-              lt(shippingRates.weightFrom, weight),
-              gte(shippingRates.weightTo, weight),
-            )
-          ).leftJoin(boxes,
-            (
-              gte(boxes.maxSumDim, length + width + height),
-              gte(boxes.maxOneDim, length),
-              gte(boxes.maxOneDim, width),
-              gte(boxes.maxOneDim, height),
-              eq(shippingRates.id, boxes.id)
-            )
-          );
-        // console.log(result.length)
-        if (result.length > 0) {
-          // console.log("Hello")
-          result.forEach((row: Partial<ParcelRate>) => {
-            const ratePerItem = row.ratePerItem ? row.ratePerItem : 0;
-            const ratePerKg = row.ratePerKg ? row.ratePerKg : 0;
-            const calculatedRate = (ratePerItem + (ratePerKg * weight))
-              .toFixed(2);
-            const carrier = row.carrier
-            queryResults.push({ carrier: carrier, rate: `€${calculatedRate}` })
-            // console.log(carrier, calculatedRate);
-          });
+    // if (fromCountry === carrier.fromCountry
+    //   //  && weight <= carrier.maxWeight
+    // ) {
+    // console.log("Hello -1")
+    try {
+      const result = await db.select({
+        fromCountry: shippingRates.fromCountry,
+        toCountry: shippingRates.toCountry,
+        carrier: shippingRates.carrier,
+        ratePerItem: shippingRates.ratePerItem,
+        ratePerKg: shippingRates.ratePerKg
+      }).from(shippingRates)
+        .where(
+          and(
+            eq(shippingRates.fromCountry, fromCountry),
+            eq(shippingRates.toCountry, toCountry),
+            eq(shippingRates.carrier, carrier.company),
+            lt(shippingRates.weightFrom, weight),
+            gte(shippingRates.weightTo, weight),
+          )
+        ).leftJoin(boxes,
+          (
+            gte(boxes.maxSumDim, length + width + height),
+            gte(boxes.maxOneDim, length),
+            gte(boxes.maxOneDim, width),
+            gte(boxes.maxOneDim, height),
+            eq(shippingRates.id, boxes.id)
+          )
+        );
+      if (result.length > 0) {
 
-        };
-
-      } catch (error) {
-        console.error("Query Error: ", error);
+        result.forEach((row: Partial<ParcelRate>) => {
+          const ratePerItem = row.ratePerItem ? row.ratePerItem : 0;
+          const ratePerKg = row.ratePerKg ? row.ratePerKg : 0;
+          const calculatedRate = (ratePerItem + (ratePerKg * weight))
+            .toFixed(2);
+          const carrier = row.carrier
+          queryResults.push({ carrier: carrier, rate: `€${calculatedRate}` })
+          // console.log(carrier, calculatedRate);
+        });
+        messages = '';
       }
+
+    } catch (error) {
+      console.error("Query Error: ", error);
     }
+    // }
   }
+  if (queryResults.length === 0) {
+    messages = "No Result Found"
+    condition = true;
+
+  } else {
+    messages = '';
+  }
+  // console.log(messages);
 
   return new NextResponse(JSON.stringify({ results: queryResults, messages: messages }), {
-    status: queryResults.length > 0 ? 200 : 400
+    status: (queryResults.length > 0 || condition == true) ? 200 : 400
   });
 
 }
