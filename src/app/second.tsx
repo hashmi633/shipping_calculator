@@ -200,55 +200,59 @@ export default function Component() {
 
       </div>
       <div className="flex-1">
-        <Card className="h-full border-2 border-gray-300">
-          {
-            isLoading ? (
-              <div>Loading...</div> // Placeholder for your loading spinner
-            ) :
+        {
+          isLoading ? (
+            <div>Loading...</div> // Placeholder for your loading spinner
+          ) :
 
 
-              resultsFetched &&
-              (
-                <div className="flex-1">
+            resultsFetched &&
+            <Card className="h-full border-2 border-gray-300">
 
-                  <CardHeader>
-                    <CardTitle>Shipping Results</CardTitle>
-                  </CardHeader>
-                  <div>
-                    {
-                      shippingOptions.map((option, index) => (
-                        <Card key={index} className="border-1">
-                          <CardHeader>
-                            <CardTitle>
-                              {option.carrier} - Standard Shipping
-                            </CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                            <div className="grid gap-4">
-                              <div className="flex items-center gap-2 ">
-                                {/* <TruckIcon className="w-4 h-4" /> */}
 
+              {resultsFetched &&
+                (
+                  <div className="flex-1">
+
+                    <CardHeader>
+                      <CardTitle>Shipping Results</CardTitle>
+                    </CardHeader>
+                    <div >
+                      {
+                        shippingOptions.map((option, index) => (
+                          <Card key={index} className="border-1">
+                            <CardHeader>
+                              <CardTitle>
+                                {option.carrier} - Standard Shipping
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <div className="grid gap-4">
+                                <div className="flex items-center gap-2 ">
+                                  {/* <TruckIcon className="w-4 h-4" /> */}
+
+                                </div>
+                                <div className="text-4xl font-bold">{option.rate}</div>
+                                {/* <Button variant="outline">Select</Button> */}
                               </div>
-                              <div className="text-4xl font-bold">{option.rate}</div>
-                              {/* <Button variant="outline">Select</Button> */}
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))
-                    }
+                            </CardContent>
+                          </Card>
+                        ))
+                      }
+                    </div>
                   </div>
-                </div>
-              )
-          }
+                )
 
-          {
-            noResult &&
-            <CardHeader>
-              <CardTitle>No Result Found</CardTitle>
-            </CardHeader>
+              }
+              {
+                noResult &&
+                <CardHeader>
+                  <CardTitle>No Result Found</CardTitle>
+                </CardHeader>
 
-          }
-        </Card>
+              }
+            </Card>
+        }
       </div>
     </main>
   )
