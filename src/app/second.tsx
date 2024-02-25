@@ -220,7 +220,7 @@ export default function Component() {
                     <div >
                       {
                         shippingOptions.map((option, index) => (
-                          <Card key={index} className="border-1">
+                          <Card key={index} className="border-2 mr-2 ml-2 mb-1">
                             <CardHeader>
                               <CardTitle>
                                 {option.carrier} - Standard Shipping
