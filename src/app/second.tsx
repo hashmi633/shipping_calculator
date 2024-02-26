@@ -23,7 +23,7 @@ export default function Component() {
   }
 
   const [destinationCountry, setDestinationCountry] = useState<string[]>([]);
-  const [destCountry, setDestCountry] = useState<string>('');
+  const [destCountry, setDestCountry] = useState<string>('Netherlands');
   const [noResult, setNoResult] = useState(false);
   const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([])
   const [originCountry, setOriginCountry] = useState<string>('Netherlands');
@@ -136,7 +136,7 @@ export default function Component() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <select className="ml-2 border border-gray-200 w-44 h-8 dark:border-gray-800">
-                      <option value="" >  {destCountry || "Netherlands"}</option>
+                      <option value="" >  {destCountry}</option>
                     </select>
                   </DropdownMenuTrigger>
 
