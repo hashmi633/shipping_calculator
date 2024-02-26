@@ -27,7 +27,7 @@ export default function Component() {
   const [noResult, setNoResult] = useState(false);
   const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([])
   const [originCountry, setOriginCountry] = useState<string>('Netherlands');
-  const [weight, setWeight] = useState<string>("");
+  const [weight, setWeight] = useState<string>("0.4");
   const [resultsFetched, setResultsFetched] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [dimension, setDimension] = useState<dimension>({
@@ -136,7 +136,7 @@ export default function Component() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <select className="ml-2 border border-gray-200 w-44 h-8 dark:border-gray-800">
-                      <option value="" >  {destCountry || "Select"}</option>
+                      <option value="" >  {destCountry || "Netherlands"}</option>
                     </select>
                   </DropdownMenuTrigger>
 
